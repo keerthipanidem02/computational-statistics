@@ -16,29 +16,29 @@ sti=int((((tia)**2)/len(a))+(((tib)**2)/len(b))+(((tic)**2)/len(c)))
 d=n1+n2+n3
 rss=0
 for i in range(len(d)):
-rss=rss+((d[i])**2)
+    rss=rss+((d[i])**2)
 cf=((ti)**2)/len(d)
 sst=rss-cf
 sstr=sti-cf
 sse=sst-sstr
-t=pd.read_excel(&quot;C:\\Users\\exam2\\Desktop\\anova.xlsx&quot;)
+t=pd.read_excel("C:\\Users\\exam2\\Desktop\\anova.xlsx")
 df=pd.DataFrame(t)
 
-df[&#39;source of variation&#39;]=[&#39;treatments&#39;,&#39;errors&#39;,&#39;total&#39;]
-df[&#39;sum of squares&#39;]=[sstr,sse,sstr+sse]
+df["source of variation"]=["treatments","errors","total"]
+df["sum of squares"]=[sstr,sse,sstr+sse]
 x=(tn-1)
 y=(len(d)-tn)
-df[&#39;degrees of freedom&#39;]=[x,y,len(d)-1]
+df["degrees of freedom"]=[x,y,len(d)-1]
 x1=sstr/x
 y1=sse/y
-df[&#39;mean sum of square&#39;]=[x1,y1,&#39;-&#39;]
+df["mean sum of square"]=[x1,y1," "]
 f=x1/y1
-df[&#39;varience ratio&#39;]=[f,&#39;-&#39;,&#39;-&#39;]
-if(f&lt;1):
-f=1/f
+df["varience ratio"]=[f,"  "," "]
+if(f<1):
+    f=1/f
 tv=s.f.ppf(1-0.05,x,y)
-if(tv&gt;f):
-print(&quot;accept&quot;)
+if(tv<f):
+    print("accept")
 else:
-print(&quot;reject&quot;)
-s=df.to_excel(&quot;C:\\Users\\exam2\\Desktop\\anova.xlsx&quot;,index=False)
+    print("reject")
+s=df.to_excel("C:\\Users\\exam2\\Desktop\\anova.xlsx",index=False)
