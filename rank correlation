@@ -37,20 +37,20 @@ def rankco(df):
     sigma_d=sum(df['diffsq'])
 #printing dataframe
     print(df)
-    l=[]
+    l={}
     cf=0
     x=list(x)
     y=list(y)
     for i in x:
         if x.count(i)>0:
-            l.append(x.count(i))
-    k=[]
+            l[i]=x.count(i)
+    k={}
     for j in y:
         if y.count(j)>0:
-            k.append(y.count(j))
-    for i in l:
+            k[j]=y.count(j)
+    for i in l.values():
         cf=cf+i*(i**2-1)/12
-    for j in k:
+    for j in k.values():
         cf=cf+j*(j**2-1)/12
     d=6*(sigma_d+cf)/(n*(n**2-1))
     r1=1-d
