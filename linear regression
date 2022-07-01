@@ -1,0 +1,18 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+n=int(input("enter n"))
+k=list(map(int,input().split()))
+t=list(map(int,input().split()))
+x=pd.Series(k)
+y=pd.Series(t)
+m=(n*(sum(x*y))-(sum(x)*sum(y)))/(n*(sum(x^2))-(sum(x))^2)
+b=(sum(y)-m*sum(x))/n
+print("m slope",m,"intercept",b)
+y1=m*x+b
+xbar=sum(x)/len(x)
+ybar=sum(y)/len(y)
+plt.title("lab cycle 1 program")
+plt.xlabel("x-axis")
+plt.ylabel("y-axis")
+plt.plot(x,y,marker='o',c='b')
+plt.plot(x,y1,marker='o',c='g')
