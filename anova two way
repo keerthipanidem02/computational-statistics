@@ -45,6 +45,7 @@ df['source_of_variation']=['treatments','blocks','errors','total']
 df['sum_of_squares']=[s2tr,s2b,s2e,s2t]
 m=t-1
 n=b-1
+p=m*n
 df['degree_of_freedom']=[m,n,m*n,(t*b)-1]
 s2tr=(s2tr)/(t-1)
 s2b=(s2b)/(b-1)
@@ -55,24 +56,25 @@ fb=s2b/s2e
 df['varience_ratio']=[ftr,fb,' ',' ']
 s=df.to_excel("/content/anova2.xlsx",index=False)
 print("inference related to treatments")
+
 if(ftr<1):
   ftr=1/ftr
-  tv1=s.f.ppf(1-al,m*n,m)
+  tvt=s.f.ppf(1-al,p,m)
 else:
-  ftr=ftr
-  tv1=s.f.ppf(1-al,m,m*n)
+  tvt=s.f.ppf(1-al,m,p)
+  
 if(fb<1):
   fb=1/fb
-  tv2=s.f.ppf(1-al,n*m,n)
+  tvb=s.f.ppf(1-al,p,n)
 else:
-  fb=fb
-  tv2=s.f.ppf(1-al,n,n*m)
-if(tv1<ftr):
+  tvb=s.f.ppf(1-al,n,p)
+
+if(tvt<ftr):
   print("reject")
 else:
   print("accept")
 print("inference related to blocks")
-if(tv2<fb):
+if(tvb<fb):
   print("reject")
 else:
   print("accept")
