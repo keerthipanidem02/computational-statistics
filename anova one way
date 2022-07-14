@@ -38,7 +38,7 @@ if(f<1):
     f=1/f
 tv=s.f.ppf(1-0.05,x,y)
 if(tv<f):
-    print("accept")
-else:
     print("reject")
+else:
+    print("accept")
 s=df.to_excel("C:\\Users\\exam2\\Desktop\\anova.xlsx",index=False)
