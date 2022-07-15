@@ -1,44 +1,66 @@
 import numpy as np
 import pandas as pd
-import scipy.stats as s
-tn=int(input())
-n1=list(map(int,input().split()))
-n2=list(map(int,input().split()))
-n3=list(map(int,input().split()))
-a=np.array(n1)
-b=np.array(n2)
-c=np.array(n3)
-tia=sum(a)
-tib=sum(b)
-tic=sum(c)
-ti=tia+tib+tic
-sti=int((((tia)**2)/len(a))+(((tib)**2)/len(b))+(((tic)**2)/len(c)))
-d=n1+n2+n3
+import scipy.stats
+
+tn=int(input("enter no of treatments"))
+al=float(input("enter alpha"))
+l=[]
+print("enter elements")
+for i in range(tn):
+    l.append([int(x) for x in input().split()])
+x=np.array(l)
+st=[]
+c=0
+l1=[]
+for i in range(0,tn):
+    for j in range(0,len(l[i])):
+        c+=1
+    l1.append(len(l[i]))
+for i in range(tn):
+     s=np.sum(x[i])
+     st.append(s)
+st=np.array(st)
+g=np.sum(st)
+l1=np.array(l1)
+ti2=st**2
+ti2ni=ti2/l1
+sti2ni=sum(ti2ni)
+print("SIGMA TI2/NI=",sti2ni)
 rss=0
-for i in range(len(d)):
-    rss=rss+((d[i])**2)
-cf=((ti)**2)/len(d)
+for i in range(0,tn):
+    for j in range(0,len(l[i])):
+        rss+=x[i][j]**2
+rss=np.sum(rss)
+print("G=",g)
+print("RSS=",rss)
+cf=g**2/c
+print("CF=",cf)
 sst=rss-cf
-sstr=sti-cf
+print("SST=",sst)
+sstr=sti2ni-cf
+print("SSTR=",sstr)
 sse=sst-sstr
+print("SSE=",sse)
 t=pd.read_excel("C:\\Users\\exam2\\Desktop\\anova.xlsx")
 df=pd.DataFrame(t)
 
 df["source of variation"]=["treatments","errors","total"]
 df["sum of squares"]=[sstr,sse,sstr+sse]
 x=(tn-1)
-y=(len(d)-tn)
-df["degrees of freedom"]=[x,y,len(d)-1]
+y=(c-tn)
+df["degrees of freedom"]=[x,y,c-1]
 x1=sstr/x
 y1=sse/y
 df["mean sum of square"]=[x1,y1," "]
 f=x1/y1
 df["varience ratio"]=[f,"  "," "]
+print(df)
 if(f<1):
     f=1/f
-tv=s.f.ppf(1-0.05,x,y)
+tv=scipy.stats.f.ppf(1-al,x,y)
 if(tv<f):
-    print("reject")
+    print("reject ho")
 else:
-    print("accept")
+    print("accept ho")
 s=df.to_excel("C:\\Users\\exam2\\Desktop\\anova.xlsx",index=False)
+
