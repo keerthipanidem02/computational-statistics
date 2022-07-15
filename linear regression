@@ -1,18 +1,40 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 n=int(input("enter n"))
 k=list(map(int,input().split()))
 t=list(map(int,input().split()))
 x=pd.Series(k)
 y=pd.Series(t)
-m=(n*(sum(x*y))-(sum(x)*sum(y)))/(n*(sum(x^2))-(sum(x))^2)
-b=(sum(y)-m*sum(x))/n
+m=(n*(np.sum(x*y))-(np.sum(x)*np.sum(y)))/(n*(np.sum(x^2))-(np.sum(x))^2)
+b=(np.sum(y)-m*np.sum(x))/n
 print("m slope",m,"intercept",b)
 y1=m*x+b
-xbar=sum(x)/len(x)
-ybar=sum(y)/len(y)
+xbar=np.sum(x)/len(x)
+ybar=np.sum(y)/len(y)
 plt.title("lab cycle 1 program")
 plt.xlabel("x-axis")
 plt.ylabel("y-axis")
 plt.plot(x,y,marker='o',c='b')
 plt.plot(x,y1,marker='o',c='g')
+df=pd.DataFrame()
+df["x"]=x
+df["y"]=y
+df["y1"]=y1
+e=y-y1
+df["error"]=e
+sse=np.sum(e**2)
+print("RESIDUE=",sse)
+print("SSE=",sse)
+sy=np.sum(y)
+my=sy/len(y)
+sst=np.sum((y-my)**2)
+print("SST=",sst)
+ssr=sst-sse
+print("SSR=",ssr)
+r2=ssr/sst
+print("R2=",r2)
+if(r2>0.90):
+    print("good fit")
+else:
+    print("not a good fit")
