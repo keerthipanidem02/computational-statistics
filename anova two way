@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import scipy.stats as s
+import scipy.stats 
 print("enter alpha")
 al=float(input())
 print("enter  no of treatments")
@@ -34,18 +34,23 @@ rss=0
 for i in range(len(l1)):
   rss+=l1[i]**2
 rss=np.sum(rss)
+print("RSS=",rss)
 cf=(g**2)/(t*b)
+print("CF=",cf)
 s2t=rss-cf
+print("S2T=",s2t)
 s2tr=((1/b)*(ssti))-cf
+print("S2TR=",s2tr)
 s2b=((1/t)*(ssbi))-cf
+print("S2B=",s2b)
 s2e=s2t-s2tr-s2b
-d=pd.read_excel("/content/anova2.xlsx")
+print("S2E=",s2e)
+d=pd.read_excel("C:\\Users\\exam2\\Desktop\\anova2.xlsx")
 df=pd.DataFrame(d)
 df['source_of_variation']=['treatments','blocks','errors','total']
 df['sum_of_squares']=[s2tr,s2b,s2e,s2t]
 m=t-1
 n=b-1
-p=m*n
 df['degree_of_freedom']=[m,n,m*n,(t*b)-1]
 s2tr=(s2tr)/(t-1)
 s2b=(s2b)/(b-1)
@@ -54,27 +59,25 @@ df['mean_sum_of_squares']=[s2tr,s2b,s2e,' ']
 ftr=s2tr/s2e
 fb=s2b/s2e
 df['varience_ratio']=[ftr,fb,' ',' ']
-s=df.to_excel("/content/anova2.xlsx",index=False)
+s=df.to_excel("C:\\Users\\exam2\\Desktop\\anova2.xlsx",index=False)
+print(df)
 print("inference related to treatments")
-
-if(ftr<1):
-  ftr=1/ftr
-  tvt=s.f.ppf(1-al,p,m)
+if(ftr>1):
+    tv1=scipy.stats.f.ppf(1-al,m,m*n)
 else:
-  tvt=s.f.ppf(1-al,m,p)
-  
-if(fb<1):
-  fb=1/fb
-  tvb=s.f.ppf(1-al,p,n)
+    ftr=1/ftr
+    tv1=scipy.stats.f.ppf(1-al,m*n,m)
+if(fb>1):
+    tv2=scipy.stats.f.ppf(1-al,n,m*n)
 else:
-  tvb=s.f.ppf(1-al,n,p)
-
-if(tvt<ftr):
-  print("reject")
+    fb=1/fb
+    tv2=scipy.stats.f.ppf(1-al,m*n,n)
+if(tv1<ftr):
+  print("reject ho")
 else:
-  print("accept")
+  print("accept ho")
 print("inference related to blocks")
-if(tvb<fb):
-  print("reject")
+if(tv2<fb):
+  print("reject ho")
 else:
-  print("accept")
+  print("accept ho")
