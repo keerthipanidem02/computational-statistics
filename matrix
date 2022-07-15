@@ -1,0 +1,63 @@
+#creating matrix
+def create(r,c,m):
+  m = []
+  print("Enter the numbers:")
+  for i in range(r):          
+    a =[]
+    for j in range(c):     
+        t=int(input())
+        a.append(t)
+    m.append(a)
+  return m
+
+#matrix printing
+def matrix(r,c,matx):
+  for i in range(r):
+    for j in range(c):
+        print(matx[i][j], end = " ")
+    print()
+
+#transpose matrix
+def transpose(r,c,m):
+  trn=[]
+  for j in range(c):
+      b=[]
+      for i in range(r):
+         b.append(m[i][j])
+      trn.append(b)
+  return trn
+
+#reading rows and coloums
+r = int(input("Enter the number of rows:"))
+c = int(input("Enter the number of columns:"))  
+
+#matrix multliplication
+def mul(r,c,ma,mb):
+  m1=[]
+  print("enter 0's")
+  mat=create(r,c,m1)
+  for i in range(r):
+      for j in range(c):
+          for k in range(r):
+              mat[i][j]=mat[i][j]+ma[i][k]*mb[k][j]
+  return mat
+    
+#function calls
+x=[]
+y=[]
+ma=create(r,c,x)
+mb=create(r,c,y)
+print(matrix(r,c,ma))
+print(matrix(r,c,mb))
+print("transpose matrix")
+trna=transpose(r,c,ma)
+trnb=transpose(r,c,mb)
+print(matrix(r,c,trna))
+print(matrix(r,c,trnb))
+multi=mul(r,c,ma,mb)
+print("multliplication matrix")
+print(matrix(r,c,multi))
+    
+
+
+
