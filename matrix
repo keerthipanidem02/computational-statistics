@@ -1,3 +1,4 @@
+import numpy as np
 #creating matrix
 def create(r,c,m):
   m = []
@@ -26,10 +27,7 @@ def transpose(r,c,m):
          b.append(m[i][j])
       trn.append(b)
   return trn
-
-#reading rows and coloums
-r = int(input("Enter the number of rows:"))
-c = int(input("Enter the number of columns:"))  
+ 
 
 #matrix multliplication
 def mul(r,c,ma,mb):
@@ -41,23 +39,68 @@ def mul(r,c,ma,mb):
           for k in range(r):
               mat[i][j]=mat[i][j]+ma[i][k]*mb[k][j]
   return mat
-    
+
+#inverse of the matrix
+def getMatrixMinor(m,i,j):
+    return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]
+
+def getMatrixDeternminant(m):
+    #base case for 2x2 matrix
+    if len(m) == 2:
+        return m[0][0]*m[1][1]-m[0][1]*m[1][0]
+
+    det= 0
+    for c in range(len(m)):
+        det += ((-1)**c)*m[0][c]*getMatrixDeternminant(getMatrixMinor(m,0,c))
+    return det
+
+def inverse(m):
+  det=getMatrixDeternminant(m)
+  if(len(m)==2):
+    return [[m[1][1]/det ,-1*m[0][1]/det],[-1*m[1][0]/det ,m[0][0]/det]]
+
+  t=[]
+  for i in range(len(m)):
+    k=[]
+    for j in range(len(m)):
+      k.append(((-1)**(i+j))*getMatrixDeternminant(getMatrixMinor(m,i,j)))
+    t.append(k)
+  t=transpose(r,c,t)
+  for i in range(len(m)):
+    for j in range(len(m)):
+      t[i][j]=t[i][j]/det
+  return t
+
+
 #function calls
+r = int(input("Enter the number of rows:"))
+c = int(input("Enter the number of columns:"))  
 x=[]
 y=[]
 ma=create(r,c,x)
 mb=create(r,c,y)
-print(matrix(r,c,ma))
-print(matrix(r,c,mb))
-print("transpose matrix")
+print("matrix's")
+matrix(r,c,ma)
+print()
+matrix(r,c,mb)
 trna=transpose(r,c,ma)
 trnb=transpose(r,c,mb)
-print(matrix(r,c,trna))
-print(matrix(r,c,trnb))
+print("transpose matrix")
+matrix(r,c,trna)
+print()
+matrix(r,c,trnb)
 multi=mul(r,c,ma,mb)
 print("multliplication matrix")
-print(matrix(r,c,multi))
-    
-
-
+matrix(r,c,multi)
+print("matrix det")
+det1=getMatrixDeternminant(ma)
+det2=getMatrixDeternminant(mb)
+print(det1,det2)
+print("inverse of matrix")
+ia=inverse(ma)
+ib=inverse(mb)
+a=np.array(ia)
+print(a)
+b=np.array(ib)
+print(b)
 
