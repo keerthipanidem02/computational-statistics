@@ -89,14 +89,17 @@ def inverse(a1):
 
   return k
   
+from matplotlib.transforms import CompositeAffine2D
 import numpy as np
+import pandas as pd
+import scipy.stats
+
 y=[]
-
-cy=int(input("enter no of y col's"))
-cx=int(input("enter no of x col's"))
-ny=int(input("enter no of values in y"))
-nx=int(input("enter no of values in x"))
-
+cy=int(input("enter no of dependent col's"))
+cx=int(input("enter no of independent col's"))
+ny=int(input("enter no of values in dependent variable"))
+nx=int(input("enter no of values in independent variables"))
+print("enter y and x values\n")
 for i in range(cy):
   y.append(list(map(int,input().split())))
 y=np.array(y)
@@ -110,122 +113,131 @@ x.insert(0,l1)
 x1=np.array(x)
 y1=np.array(y)
 print("y matrix:\n",np.array(y1))
-print("\n x matrix:\n ",np.array(x1))
+print("x matrix:\n ",np.array(x1))
 
 
 xt=transpose(x1)
 xt1=np.array(xt)
-print("\n transpose matrix:\n",xt1)
+print("transpose matrix:\n",xt1)
 
 xtx=mul(x1,xt)
 xtxi=inverse(xtx)
 
 xtx1=np.array(xtx)
 xtxi1=np.array(xtxi)
-print("\n xtx matrix:\n",xtx1)
-print("\n xtxi matrix:\n",xtxi1)
+print("xtx matrix:\n",xtx1)
+print("xtxi matrix:\n",xtxi1)
 
 yt=transpose(y)
 
 xty=mul(x1,yt)
 xty1=np.array(xty)
-print("\n xty matrix:\n",xty1)
+print("xty matrix:\n",xty1)
 
 B=mul(xtxi,xty)
 B1=np.array(B)
-print("\n result B matrix:\n",B1)
-
-print("equation is : y={}+{}x1+{}x2".format(B1[0],B1[1],B1[2]))
+p=len(B)
+print("result B matrix:\n",B1)
+if(p==2):
+  print("Multiple linear regression equation is : y={}+{}x1".format(B1[0],B1[1]))
+if(p==3):
+    print("Multiple linear regression equation is : y={}+{}x1+{}x2".format(B1[0],B1[1],B1[2]))
+if(p==4):
+  print("Multiple linear regression equation is : y={}+{}x1+{}x2+{}x3".format(B1[0],B1[1],B1[2],B2[3]))
 
 yc=B1[0]+B1[1]*x1[1]+B1[2]*x1[2]
 ycc=np.array(yc)
-print("\n ycap \n",ycc)
+print("y-hat: \n",ycc)
 
 e=y-yc
 e1=np.array(e)
-print("\nerror\n",e1)
+print("error:\n",e1)
 
+print("Required values:\n")
 sse=0
 for i in e1[0]:
   sse=sse+i*i
-print("SSE:",sse)
+print("SSE=",sse)
 
 ym=(np.sum(y1))/ny
 sst=0
 for i in y1[0]:
   sst=sst+(i-ym)**2
-print("SST:",sst)
+print("SST=",sst)
 
 ssr=sst-sse
-print("SSE:",sse)
+print("SSR=",ssr)
 
+#To test the R2 
+print("R2 Test \n")
 r2=ssr/sst
-print("R2:",r2)
+print("R2=",r2)
 
 if(r2>0.9):
   print("accept the model-good fit")
 else:
   print("reject the model-bad fit")
 
+#To test the model using ANOVA
+print("ANOVA TEST")
+print("enter alpha")
+al=float(input())
+df=pd.DataFrame()
+df["source of variation"]=["Regression","errors","total"]
+df["sum of squares"]=[ssr,sse,ssr+sse]
+x=(p-1)
+y=(ny-p)
+df["degrees of freedom"]=[x,y,ny-1]
+x1=ssr/x
+y1=sse/y
+df["mean sum of square"]=[x1,y1," "]
+f=x1/y1
+df["varience ratio"]=[f,"  "," "]
+print("ANOVA TABLE\n")
+print(df)
+if(f<1):
+    f=1/f
+tv=scipy.stats.f.ppf(1-al,x,y)
+if(tv<f):
+    print("reject ho")
+else:
+    print("accept ho")
+
+#T-test for the individual beta values
+print("T-test\n")
+c=[]
+for i in range(len(xtxi)):
+  for j in range(len(xtxi)):
+    if(i==j):
+        c.append(xtxi[i][j])
+pre=[]
+coeff=[]
+se=[]
+for i in range(len(B)):
+  pre.append("beta["+str(i)+"]")
+  coeff.append(B[i])
+
+for i in range(len(c)):
+  se.append(np.sqrt(y1*c[i]))
+
+t=[]
+for i in range(len(B)):
+  t.append(coeff[i][0]/se[i])
+
+df1=pd.DataFrame()
+df["predictor"]=pre
+df["coefficient"]=coeff
+df["standard error"]=se
+df["T-values"]=t
+print("PARAMETER TABLE\n")
+print(df)
+print("INFERENCE\n")
+for i in range(len(t)):
+  tv=scipy.stats.t.ppf(1-((al)/2),y)
+  if(tv<abs(t[i])):
+    print("reject ho beta{}!=0  for tv={} contributing to the model".format(i,tv))
+  else:
+    print("accept ho beta{}==0  for tv={} not contributing to the model".format(i,tv))
 
 
-output:
 
-
-enter no of y col's1
-enter no of x col's2
-enter no of values in y7
-enter no of values in x7
-11 11 8 2 5 5 4
--5 -4 -1 2 2 3 3
-5 4 1 -3 -2 -2 -3
-y matrix:
- [[11 11  8  2  5  5  4]]
-
- x matrix:
-  [[ 1  1  1  1  1  1  1]
- [-5 -4 -1  2  2  3  3]
- [ 5  4  1 -3 -2 -2 -3]]
-
- transpose matrix:
- [[ 1 -5  5]
- [ 1 -4  4]
- [ 1 -1  1]
- [ 1  2 -3]
- [ 1  2 -2]
- [ 1  3 -2]
- [ 1  3 -3]]
-
- xtx matrix:
- [[  7   0   0]
- [  0  68 -67]
- [  0 -67  68]]
-
- xtxi matrix:
- [[0.14285714 0.         0.        ]
- [0.         0.5037037  0.4962963 ]
- [0.         0.4962963  0.5037037 ]]
-
- xty matrix:
- [[ 46]
- [-66]
- [ 69]]
-
- result B matrix:
- [[6.57142857]
- [1.        ]
- [2.        ]]
-equation is : y=[6.57142857]+[1.]x1+[2.]x2
-
- ycap 
- [11.57142857 10.57142857  7.57142857  2.57142857  4.57142857  5.57142857
-  3.57142857]
-
-error
- [[-0.57142857  0.42857143  0.42857143 -0.57142857  0.42857143 -0.57142857
-   0.42857143]]
-SSE: 1.7142857142857144
-SST: 73.71428571428571
-SSE: 1.7142857142857144
-R2: 0.9767441860465117
-accept the model-good fit
