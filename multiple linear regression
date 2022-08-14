@@ -89,7 +89,6 @@ def inverse(a1):
 
   return k
   
-from matplotlib.transforms import CompositeAffine2D
 import numpy as np
 import pandas as pd
 import scipy.stats
@@ -101,11 +100,11 @@ ny=int(input("enter no of values in dependent variable"))
 nx=int(input("enter no of values in independent variables"))
 print("enter y and x values\n")
 for i in range(cy):
-  y.append(list(map(int,input().split())))
+  y.append(list(map(float,input().split())))
 y=np.array(y)
 x=[]
 for i in range(cx):
-    x.append(list(map(int,input().split())))
+    x.append(list(map(float,input().split())))
 l1=[]
 for i in range(nx):
   l1.append(1)
@@ -140,12 +139,14 @@ p=len(B)
 print("result B matrix:\n",B1)
 if(p==2):
   print("Multiple linear regression equation is : y={}+{}x1".format(B1[0],B1[1]))
+  yc=B1[0]+B1[1]*x1[1]
 if(p==3):
     print("Multiple linear regression equation is : y={}+{}x1+{}x2".format(B1[0],B1[1],B1[2]))
+    yc=B1[0]+B1[1]*x1[1]+B1[2]*x1[2]
 if(p==4):
-  print("Multiple linear regression equation is : y={}+{}x1+{}x2+{}x3".format(B1[0],B1[1],B1[2],B2[3]))
+  print("Multiple linear regression equation is : y={}+{}x1+{}x2+{}x3".format(B1[0],B1[1],B1[2],B1[3]))
+  yc=B1[0]+B1[1]*x1[1]+B1[2]*x1[2]+B1[3]*x1[3]
 
-yc=B1[0]+B1[1]*x1[1]+B1[2]*x1[2]
 ycc=np.array(yc)
 print("y-hat: \n",ycc)
 
@@ -225,10 +226,10 @@ for i in range(len(B)):
   t.append(coeff[i][0]/se[i])
 
 df1=pd.DataFrame()
-df["predictor"]=pre
-df["coefficient"]=coeff
-df["standard error"]=se
-df["T-values"]=t
+df1["predictor"]=pre
+df1["coefficient"]=coeff
+df1["standard error"]=se
+df1["T-values"]=t
 print("PARAMETER TABLE\n")
 print(df)
 print("INFERENCE\n")
@@ -238,6 +239,4 @@ for i in range(len(t)):
     print("reject ho beta{}!=0  for tv={} contributing to the model".format(i,tv))
   else:
     print("accept ho beta{}==0  for tv={} not contributing to the model".format(i,tv))
-
-
 
