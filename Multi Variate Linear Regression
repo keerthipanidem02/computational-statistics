@@ -1,0 +1,60 @@
+import numpy as np
+import pandas as pd
+import scipy.stats
+
+y=[]
+cy=int(input("enter no of dependent col's"))
+cx=int(input("enter no of independent col's"))
+ny=int(input("enter no of values in dependent variable"))
+nx=int(input("enter no of values in independent variables"))
+print("enter y and x values\n")
+for i in range(cy):
+  y.append(list(map(float,input().split())))
+y=np.array(y)
+x=[]
+for i in range(cx):
+    x.append(list(map(float,input().split())))
+'''
+cy=2
+cx=3
+ny=12
+nx=12
+y=[[10, 12, 11, 9 ,9 ,10, 11, 12, 11, 10, 11, 12],[100, 110, 105 ,94, 95, 99, 104, 108 ,105 ,98 ,103, 110]]
+x=[[9,  8, 7, 14, 12, 10, 7, 4 ,6 ,5 ,7, 6],[62, 58, 64, 60, 63, 57, 55, 56, 59, 61 ,57 ,60],[1.0 ,1.3, 1.2, 0.8, 0.8, 0.9, 1.0, 1.2, 1.1, 1.0, 1.2, 1.2]]
+'''
+l1=[]
+for i in range(nx):
+  l1.append(1)
+x.insert(0,l1)
+x1=np.array(x)
+y1=np.array(y)
+print("y matrix:\n",np.array(y1))
+print("x matrix:\n ",np.array(x1))
+
+
+xt=transpose(x1)
+xt1=np.array(xt)
+print("transpose matrix:\n",xt1)
+
+xtx=mul(x1,xt)
+xtxi=inverse(xtx)
+
+xtx1=np.array(xtx)
+xtxi1=np.array(xtxi)
+print("xtx matrix:\n",xtx1)
+print("xtxi matrix:\n",xtxi1)
+
+yt=transpose(y)
+
+xty=mul(x1,yt)
+xty1=np.array(xty)
+print("xty matrix:\n",xty1)
+
+B=mul(xtxi,xty)
+B1=np.array(B)
+p=len(B1)
+print("result B matrix:\n",B1)
+
+print("Multiple linear regression equation 1 is : y={}+{}x1+{}x2+{}x3".format(B1[0][0],B1[1][0],B1[2][0],B1[3][0]))
+print("Multiple linear regression equation 2 is : y={}+{}x1+{}x2+{}x3".format(B1[0][1],B1[1][1],B1[2][1],B1[3][1]))
+
