@@ -114,7 +114,6 @@ y1=np.array(y)
 print("y matrix:\n",np.array(y1))
 print("x matrix:\n ",np.array(x1))
 
-
 xt=transpose(x1)
 xt1=np.array(xt)
 print("transpose matrix:\n",xt1)
@@ -154,7 +153,7 @@ e=y-yc
 e1=np.array(e)
 print("error:\n",e1)
 
-print("Required values:\n")
+print("Required values:")
 sse=0
 for i in e1[0]:
   sse=sse+i*i
@@ -170,17 +169,17 @@ ssr=sst-sse
 print("SSR=",ssr)
 
 #To test the R2 
-print("R2 Test \n")
+print("\n1) R2 Test ")
 r2=ssr/sst
 print("R2=",r2)
-
+print("inference related to r2 test")
 if(r2>0.9):
   print("accept the model-good fit")
 else:
   print("reject the model-bad fit")
 
 #To test the model using ANOVA
-print("ANOVA TEST")
+print("2)ANOVA TEST")
 print("enter alpha")
 al=float(input())
 df=pd.DataFrame()
@@ -196,6 +195,7 @@ f=x1/y1
 df["varience ratio"]=[f,"  "," "]
 print("ANOVA TABLE\n")
 print(df)
+print("inference related to anova test")
 if(f<1):
     f=1/f
 tv=scipy.stats.f.ppf(1-al,x,y)
@@ -205,7 +205,7 @@ else:
     print("accept ho")
 
 #T-test for the individual beta values
-print("T-test\n")
+print("\nT-test\n")
 c=[]
 for i in range(len(xtxi)):
   for j in range(len(xtxi)):
@@ -231,8 +231,8 @@ df1["coefficient"]=coeff
 df1["standard error"]=se
 df1["T-values"]=t
 print("PARAMETER TABLE\n")
-print(df)
-print("INFERENCE\n")
+print(df1)
+print("inference related to t-test\n")
 for i in range(len(t)):
   tv=scipy.stats.t.ppf(1-((al)/2),y)
   if(tv<abs(t[i])):
@@ -240,3 +240,92 @@ for i in range(len(t)):
   else:
     print("accept ho beta{}==0  for tv={} not contributing to the model".format(i,tv))
 
+
+
+output:
+
+enter no of dependent col's1
+enter no of independent col's2
+enter no of values in dependent variable7
+enter no of values in independent variables7
+enter y and x values
+
+11 11 8 2 5 5 4
+-5 -4 -1 2 2 3 3
+5 4 1 -3 -2 -2 -3
+y matrix:
+ [[11. 11.  8.  2.  5.  5.  4.]]
+x matrix:
+  [[ 1.  1.  1.  1.  1.  1.  1.]
+ [-5. -4. -1.  2.  2.  3.  3.]
+ [ 5.  4.  1. -3. -2. -2. -3.]]
+transpose matrix:
+ [[ 1. -5.  5.]
+ [ 1. -4.  4.]
+ [ 1. -1.  1.]
+ [ 1.  2. -3.]
+ [ 1.  2. -2.]
+ [ 1.  3. -2.]
+ [ 1.  3. -3.]]
+xtx matrix:
+ [[  7.   0.   0.]
+ [  0.  68. -67.]
+ [  0. -67.  68.]]
+xtxi matrix:
+ [[ 0.14285714 -0.         -0.        ]
+ [-0.          0.5037037   0.4962963 ]
+ [-0.          0.4962963   0.5037037 ]]
+xty matrix:
+ [[ 46.]
+ [-66.]
+ [ 69.]]
+result B matrix:
+ [[6.57142857]
+ [1.        ]
+ [2.        ]]
+Multiple linear regression equation is : y=[6.57142857]+[1.]x1+[2.]x2
+y-hat: 
+ [11.57142857 10.57142857  7.57142857  2.57142857  4.57142857  5.57142857
+  3.57142857]
+error:
+ [[-0.57142857  0.42857143  0.42857143 -0.57142857  0.42857143 -0.57142857
+   0.42857143]]
+Required values:
+SSE= 1.7142857142857144
+SST= 73.71428571428571
+SSR= 72.0
+
+1) R2 Test 
+R2= 0.9767441860465117
+inference related to r2 test
+accept the model-good fit
+2)ANOVA TEST
+enter alpha
+0.05
+ANOVA TABLE
+
+  source of variation  sum of squares  degrees of freedom mean sum of square  \
+0          Regression       72.000000                   2               36.0   
+1              errors        1.714286                   4           0.428571   
+2               total       73.714286                   6                      
+
+  varience ratio  
+0           84.0  
+1                 
+2                 
+inference related to anova test
+reject ho
+
+T-test
+
+PARAMETER TABLE
+
+  predictor          coefficient  standard error   T-values
+0   beta[0]  [6.571428571428571]        0.247436  26.558112
+1   beta[1]  [1.000000000000007]        0.464621   2.152290
+2   beta[2]                [2.0]        0.464621   4.304580
+inference related to t-test
+
+reject ho beta0!=0  for tv=2.7764451051977987 contributing to the model
+accept ho beta1==0  for tv=2.7764451051977987 not contributing to the model
+reject ho beta2!=0  for tv=2.7764451051977987 contributing to the model
