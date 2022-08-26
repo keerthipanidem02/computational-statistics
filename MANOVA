@@ -1,3 +1,19 @@
+def determinent(a1):
+  
+
+  if len(a1)==2:
+    return a1[0][0]*a1[1][1]-a1[0][1]*a1[1][0]
+
+  sum=0
+  for i in range(len(a1)):
+    sum+=((-1)**i)*a1[0][i]*determinent(minor(a1,0,i))
+
+  return sum
+
+
+
+
+
 import numpy as np
 import pandas as pd
 import scipy.stats
