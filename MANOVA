@@ -1,0 +1,157 @@
+import numpy as np
+import pandas as pd
+import scipy.stats
+t=int(input("enter no of treatments"))
+
+l1=[]
+l2=[]
+l3=[]
+n1=int(input("enter no.of elements in treatment1:"))
+n2=int(input("enter no.of elements in treatment2:"))
+n3=int(input("enter no.of elements in treatment3:"))
+for i in range(n1):
+  l1.append([int(x) for x in input().split()])
+for i in range(n2):
+  l2.append([int(x) for x in input().split()])
+for i in range(n3):
+  l3.append([int(x) for x in input().split()])
+p=[]
+p.append(l1)
+p.append(l2)
+p.append(l3)
+'''
+p=[[[9,3],[6,2],[9,7]],[[0,4],[2,0]],[[3,8],[1,9],[2,7]]]
+#[[8,4],[1,2],[2,8]]
+#[[4,5]]
+n1=3
+n2=2
+n3=3
+'''
+yi=[]
+ybar=[]
+l=0
+for k in range(t):
+  b=[]
+  for j in range(len(p[0][0])):
+      a=0
+      for i in range(len(p[k])):
+          a=a+p[k][i][j]
+      l=l+len(p[k])
+      a=a/len(p[k])
+      b.append(a)
+  yi.append(b)
+print("yi:",yi)
+b=[]
+for j in range(len(p[0][0])):
+    a=0
+    for k in range(t):
+        for i in range(len(p[k])):
+            a=a+p[k][i][j]
+    a=a*2/l
+    b.append(a)
+ybar.append(b)
+print("ybar:",ybar)
+s=0
+sse=[]
+for j in range(len(p[0][0])):
+    s=0
+    for k in range(t):
+        for i in range(len(p[k])):
+          s=s+(p[k][i][j]-yi[k][j])**2
+    sse.append(s)
+print("sse of y1 y2:",sse)
+sst=[]
+for j in range(len(p[0][0])):
+    s=0
+    for k in range(t):
+        for i in range(len(p[k])):
+          s=s+(p[k][i][j]-ybar[0][j])**2
+    sst.append(s)
+print("sst of y1 y2:",sst)
+sst=np.array(sst)
+sse=np.array(sse)
+ssr=sst-sse
+print("ssr of y1 y2:",ssr)
+yy=[]
+s=0
+for j in range(1):
+   for k in range(t):
+      for i in range(len(p[k])):
+        s=s+(p[k][i][j]*p[k][i][j+1]-yi[k][j]*yi[k][j+1])
+sseyy=s
+yy.append(s)
+s=0
+for j in range(1):
+   for k in range(t):
+      for i in range(len(p[k])):
+        s=s+(p[k][i][j]*p[k][i][j+1]-ybar[0][j]*ybar[0][j+1])
+sstyy=s
+ssryy=sstyy-sseyy
+yy.append(s)
+yy.append(ssryy)
+print("cross product of y1 y2 sse sst ssr values:",yy)
+B=[[ssr[0],yy[2]],[yy[2],ssr[1]]]
+W=[[sse[0],yy[0]],[yy[0],sse[1]]]
+T=[[sst[0],yy[1]],[yy[1],sst[1]]]
+b1=np.array(B)
+w1=np.array(W)
+t1=np.array(T)
+detw=determinent(W)
+dett=determinent(T)
+ld=detw/dett
+rd=t-1
+ed=n1+n2+n3-t
+td=rd+ed
+F=((ed-1)/(rd))*((1-((ld)**(1/2)))/((ld)**(1/2)))
+df=pd.DataFrame()
+df['source of variation']=['regression','error','total']
+df['sum of squares']=[b1,w1,t1]
+df['degrees of freedom']=[rd,ed,td]
+df['wilks value']=[ld,"",""]
+df['f-statistic']=[F,"",""]
+print("table")
+print(df)
+al=float(input())
+x=rd*2
+y=(ed-1)*2
+tv=scipy.stats.f.ppf(1-al,x,y)
+print("table value:",tv)
+if(F>tv):
+  print("reject the model")
+else:
+  print("accept the model")
+  
+  
+  OUTPUT:
+  
+  enter no of treatments3
+enter no.of elements in treatment1:3
+enter no.of elements in treatment2:2
+enter no.of elements in treatment3:3
+9 3
+6 2
+9 7
+0 4
+2 0
+3 8
+1 9
+2 7
+yi: [[8.0, 4.0], [1.0, 2.0], [2.0, 8.0]]
+ybar: [[4.0, 5.0]]
+sse of y1 y2: [10.0, 24.0]
+sst of y1 y2: [88.0, 72.0]
+ssr of y1 y2: [78. 48.]
+cross product of y1 y2 sse sst ssr values: [1.0, -11.0, -12.0]
+table
+  source of variation                  sum of squares  degrees of freedom  \
+0          regression  [[78.0, -12.0], [-12.0, 48.0]]                   2   
+1               error      [[10.0, 1.0], [1.0, 24.0]]                   5   
+2               total  [[88.0, -11.0], [-11.0, 72.0]]                   7   
+
+  wilks value f-statistic  
+0    0.038455     8.19886  
+1                          
+2                          
+0.05
+table value: 3.837853354555897
+reject the model
