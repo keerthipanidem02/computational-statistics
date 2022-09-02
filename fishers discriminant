@@ -1,0 +1,101 @@
+import numpy as np
+import math
+'''
+x=int(input("enter no of x's"))
+y=int(input("enter no of y's"))
+nx=int(input("enter no of values in x"))
+ny=int(input("enter no of values in y"))
+l=[]
+for i in range(x):
+   l.append(list(map(float,input().split())))
+x1=np.array(l)
+l=[]
+
+l=list(map(int,input().split()))
+y1=np.array(l)
+'''
+'''
+x=2
+y=1
+nx=7
+ny=7
+x1=[[2.95,2.53,3.57,3.16,2.58,2.16,3.27],[6.63,7.79,5.65,5.47,4.46,6.22,3.52]]
+y1=[1,1,1,1,0,0,0]
+'''
+x=2
+y=1
+nx=10
+ny=10
+x1=[[4, 2, 2, 3 ,4, 9, 6, 9, 8 ,10],[2 ,4 ,3, 6 ,4, 10, 8 ,5 ,7, 8]]
+y1=[1,1,1,1,1,0,0,0,0,0]
+print("x1",x1)
+print("y1",y1)
+# x1 and x2 values 
+l=[]
+l1=[]
+l2=[]
+for j in range(x):
+  a=[]
+  b=[]
+  for i in range(nx):
+      if(y1[i]==1):
+          a.append(x1[j][i])
+      if(y1[i]==0):
+          b.append(x1[j][i])
+  l1.append(a)
+  l2.append(b)
+print("l1",l1)
+print("l2",l2)
+#mean of x x1 x2
+def meanf(x1):
+  m=[]
+  for i in range(len(x1)):
+    s=np.sum(x1[i])
+    m.append([s/len(x1[0])])
+  return m
+xu=meanf(x1)
+l1u=meanf(l1)
+l2u=meanf(l2)
+
+print("xu",xu)
+print("l1u",l1u)
+print("l2u",l2u)
+#x-u values
+x_u=np.array(x1)-np.array(xu)
+print("x_u",x_u)
+print("x_ut",x_ut)
+#c- pooled covarience
+x_ut=transpose(x_u)
+c=np.array(mul(x_u,x_ut))/nx
+print("c",c)
+#inverse of c
+ci=inverse(c)
+print("ci",ci)
+#xk values reading
+'''
+xk=[]
+for i in range(x):
+  t=float(input())
+  xk.append([t])
+'''
+
+#xk=[[2.81],[5.46]]
+xk=[[5],[6]]
+print("xk",xk)
+#fisher's linear discriminant function
+def fisher(l1u,ci,xk,l1):
+  l1ut=np.array(transpose(l1u))
+  f=np.array(mul(l1ut,ci))
+  fa=mul(f,xk)
+  fb=mul(f,l1u)
+  fb=(np.array(fb))/2
+  f1=fa-fb+math.log(len(l1[0])/nx)
+  return f1
+f1=fisher(l1u,ci,xk,l1)
+f2=fisher(l2u,ci,xk,l2)
+print("f1",f1)
+print("f2",f2)
+if(f1[0]>f2[0]):
+  print("new observation is placed into f1")
+else:
+  print("new observation is placed into f2")
