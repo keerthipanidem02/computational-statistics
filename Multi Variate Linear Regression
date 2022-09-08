@@ -1,264 +1,170 @@
+#Multi variate Linear Regression
 import numpy as np
-import pandas as pd
-import scipy.stats
 '''
-y=[]
-cy=int(input("enter no of dependent col's"))
-cx=int(input("enter no of independent col's"))
-ny=int(input("enter no of values in dependent variable"))
-nx=int(input("enter no of values in independent variables"))
-print("enter y and x values\n")
-for i in range(cy):
-  y.append(list(map(float,input().split())))
-y=np.array(y)
-x=[]
-for i in range(cx):
-    x.append(list(map(float,input().split())))
+q=int(input('Enter no. of dependent variables:'))
+yt=[]
+for i in range(q):
+  print('Enter y'+str(i+1),'data')
+  yt.append([float(j) for j in input().split()])
+
+n=len(yt[0])
+p=int(input('Enter no. of independent variables:'))
+xt=[]
+xt.append([1]*n)
+for i in range(p):
+  print('Enter x'+str(i+1),'data')
+  xt.append([float(j) for j in input().split()])
+
+p=p+1
+g=float(input('Enter level of  significance: '))
 '''
-cy=2
-cx=3
-ny=12
-nx=12
-y=[[10, 12, 11, 9 ,9 ,10, 11, 12, 11, 10, 11, 12],[100, 110, 105 ,94, 95, 99, 104, 108 ,105 ,98 ,103, 110]]
-x=[[9,  8, 7, 14, 12, 10, 7, 4 ,6 ,5 ,7, 6],[62, 58, 64, 60, 63, 57, 55, 56, 59, 61 ,57 ,60],[1.0 ,1.3, 1.2, 0.8, 0.8, 0.9, 1.0, 1.2, 1.1, 1.0, 1.2, 1.2]]
+q=2
+p=3
+yt=[[10, 12, 11, 9 ,9 ,10, 11, 12, 11, 10, 11, 12],[100, 110, 105 ,94, 95, 99, 104, 108 ,105 ,98 ,103, 110]]
+xt=[[9,  8, 7, 14, 12, 10, 7, 4 ,6 ,5 ,7, 6],[62, 58, 64, 60, 63, 57, 55, 56, 59, 61 ,57 ,60],[1.0 ,1.3, 1.2, 0.8, 0.8, 0.9, 1.0, 1.2, 1.1, 1.0, 1.2, 1.2]]
+g=0.05
 
-l1=[]
-for i in range(nx):
-  l1.append(1)
-x.insert(0,l1)
-x1=np.array(x)
-y1=np.array(y)
-print("y matrix:\n",np.array(y1))
-print("x matrix:\n ",np.array(x1))
+#transpose matrix
+def transpose(m):
+  r=len(m)
+  c=len(m[0])
+  trn=[]
+  for j in range(c):
+      b=[]
+      for i in range(r):
+         b.append(m[i][j])
+      trn.append(b)
+  return trn
 
+def getMinor(m,i,j):
+  return [p[:j]+p[j+1:] for p in m[:i]+m[i+1:]]
 
-xt=transpose(x1)
-xt1=np.array(xt)
-print("transpose matrix:\n",xt1)
+def getDeterminant(a):
+  if len(a)==1:
+    return a[0][0]
+  if len(a)==2:
+    return a[0][0]*a[1][1]-a[0][1]*a[1][0]
+  det=0
+  for c in range(len(a)):
+    det+=(-1)**c*a[0][c]*getDeterminant(getMinor(a,0,c))
+  return det
 
-xtx=mul(x1,xt)
-xtxi=inverse(xtx)
+def coFactor(m):
+  return [[(-1)**(i+j)*getDeterminant(getMinor(m,i,j))for j in range(len(m))] for i in range(len(m))]
 
-xtx1=np.array(xtx)
-xtxi1=np.array(xtxi)
-print("xtx matrix:\n",xtx1)
-print("xtxi matrix:\n",xtxi1)
+def Inverse(m):
+  det=getDeterminant(m)
+  if det==0: print('det=0,Inverse not posssible');exit()
+  adj=transpose(coFactor(m))
+  return [[adj[i][j]/det for j in range(len(adj[0]))] for i in range(len(adj))]
 
-yt=transpose(y)
+def Multiply(a,b):
+    r1,c1,r2,c2=len(a),len(a[0]),len(b),len(b[0])
+    if c1!=r2: print('Multiplication not possible');exit()
+    mm=[]
+    for i in range(0,r1):
+        c=[]
+        for j in range(0,c2):
+            p=0
+            for k in range(0,c1):
+                p=p+(a[i][k]*b[k][j])
+            c.append(p)
+        mm.append(c)
+    return mm
 
-xty=mul(x1,yt)
-xty1=np.array(xty)
-print("xty matrix:\n",xty1)
+x=transpose(xt)
+y=transpose(yt)
+xtxi=Inverse(Multiply(xt,x))
+xty=Multiply(xt,y)
+b=Multiply(xtxi,xty)
+yt=np.array(yt)
+xt=np.array(xt)
 
-B=mul(xtxi,xty)
-B1=np.array(B)
-p=len(B1)
-print("result B matrix:\n",B1)
-print("Multiple linear regression equation  are :")
-for i in range(cy):
-    print(" y={}+{}x1+{}x2+{}x3".format(B1[0][i],B1[1][i],B1[2][i],B1[3][i]))
-    yc=B1[0][i]+B1[1][i]*x1[1]+B1[2][i]*x1[2]+B1[3][i]*x1[3]
+for i in range(q):
+  print('\nEQUATION y{}'.format(i+1))
+  ye='y'+str(i+1)+' = '
+  ye=ye+str('%.3f'%b[0][i])+' + '
+  y1=np.array(b[0][i]*xt[0])
+  f=0
+  for j in range(1,p):
+      ye=ye+str('(%.3f)'%b[j][i])+'x'+str(j);y1=y1+(b[j][i]*xt[j])
+      if j!=p-1:ye=ye+' + '
 
-ycc=np.array(yc)
-print("y-hat: \n",ycc)
+  print('Model fit equation is ',ye)
+  sse=np.sum((yt[i]-y1)**2)
+  sst=np.sum((yt[i]-np.mean(yt[i]))**2)
+  ssr=sst-sse
+  print('\nUsing Coefficient of Determination Method: ')
+  r2=ssr/sst
+  print('R^2 = %.5f'%(r2))
+  if(r2>0.90):print('Model fits good (R^2>0.90)')
+  else:print('Model does not fit good (R^2<=0.90)')
+  print('\nUSing ANOVA Test:')
+  mssr=ssr/(p-1)
+  msse=sse/(n-p)
+  f=mssr/msse
+  import scipy.stats as s
+  if f>=1: ft=s.f.ppf(1-g,p-1,n-p)
+  else: f=1/f;ft=s.f.ppf(1-g,n-p,p-1)
+  print('Calculated value of f is %.5f'%(f))
+  print('Table value of f is %.5f'%(ft))
+  if f>ft: print('Model fits good')
+  else: print('Model does not fit good')
 
-e=y-yc
-e1=np.array(e)
-print("error:\n",e1)
+  print('\nTest of Individual Parameters:')
+  cjj=[xtxi[j][j] for j in range(len(xtxi))]
+  tt=s.t.ppf(1-g/2,n-p)
+  print('Table value of t is %.5f'%(tt))
+  for j in range(p):
+      e=np.sqrt(msse*cjj[j])
+      t=b[j][i]/e
+      q='b['+str(j)+']'
+      print('t(cal) for',q,'is %.5f'%(t))
+      if abs(t)>tt: print(q,'is contributing to the model')
+      else: print(q,'is not contributing to the model')
+      
+      
+      output:
+      
+      
+      EQUATION y1
+Model fit equation is  y1 = 0.016 + (0.052)x1 + (7.004)x2
 
-print("Required values:")
-sse=0
-for i in e1[0]:
-  sse=sse+i*i
-print("SSE=",sse)
+Using Coefficient of Determination Method: 
+R^2 = 0.75277
+Model does not fit good (R^2<=0.90)
 
-ym=(np.sum(y1))/ny
-sst=0
-for i in y1[0]:
-  sst=sst+(i-ym)**2
-print("SST=",sst)
+USing ANOVA Test:
+Calculated value of f is 13.70138
+Table value of f is 4.25649
+Model fits good
 
-ssr=sst-sse
-print("SSR=",ssr)
+Test of Individual Parameters:
+Table value of t is 2.26216
+t(cal) for b[0] is 0.17762
+b[0] is not contributing to the model
+t(cal) for b[1] is 1.56078
+b[1] is not contributing to the model
+t(cal) for b[2] is 5.17916
+b[2] is contributing to the model
 
-#To test the R2 
-print("\n1) R2 Test ")
-r2=ssr/sst
-print("R2=",r2)
-print("inference related to r2 test")
-if(r2>0.9):
-  print("accept the model-good fit")
-else:
-  print("reject the model-bad fit")
+EQUATION y2
+Model fit equation is  y2 = 0.444 + (0.877)x1 + (44.292)x2
 
+Using Coefficient of Determination Method: 
+R^2 = 0.39954
+Model does not fit good (R^2<=0.90)
 
-#To test the model using ANOVA
-print("2)ANOVA TEST")
-print("enter alpha")
-al=float(input())
-df=pd.DataFrame()
-df["source of variation"]=["Regression","errors","total"]
-df["sum of squares"]=[ssr,sse,ssr+sse]
-x=(p-1)
-y=(ny-p)
-df["degrees of freedom"]=[x,y,ny-1]
-x1=ssr/x
-y1=sse/y
-df["mean sum of square"]=[x1,y1," "]
-f=x1/y1
-df["varience ratio"]=[f,"  "," "]
-print("ANOVA TABLE\n")
-print(df)
-print("inference related to anova test")
-if(f<1):
-    f=1/f
-tv=scipy.stats.f.ppf(1-al,x,y)
-if(tv<f):
-    print("reject ho")
-else:
-    print("accept ho")
+USing ANOVA Test:
+Calculated value of f is 2.99422
+Table value of f is 4.25649
+Model does not fit good
 
-
-#T-test for the individual beta values
-print("\nT-test\n")
-c=[]
-for i in range(len(xtxi)):
-  for j in range(len(xtxi)):
-    if(i==j):
-        c.append(xtxi[i][j])
-pre=[]
-coeff=[]
-se=[]
-for i in range(len(B)):
-  pre.append("beta["+str(i)+"]")
-  coeff.append(B[i])
-
-for i in range(len(c)):
-  se.append(np.sqrt(y1*c[i]))
-
-t=[]
-for i in range(len(B)):
-  t.append(coeff[i][0]/se[i])
-
-df1=pd.DataFrame()
-df1["predictor"]=pre
-df1["coefficient"]=coeff
-df1["standard error"]=se
-df1["T-values"]=t
-print("PARAMETER TABLE\n")
-
-h=[]
-for i in range(len(B)):
-  h.append(B[i][0]/se[i])
-  
-print(df1)
-m=len(B)
-
-for i in range(len(B)):
-  ttable=scipy.stats.t.ppf(1-al/2,y)
-  if(abs(h[i])<ttable):
-    print("beta"+str(i)+" is not contributing to the model")
-  else:
-    print("beta"+str(i)+" is contributing to the model")
-
-
-y matrix:
- [[ 10  12  11   9   9  10  11  12  11  10  11  12]
- [100 110 105  94  95  99 104 108 105  98 103 110]]
-x matrix:
-  [[ 1.   1.   1.   1.   1.   1.   1.   1.   1.   1.   1.   1. ]
- [ 9.   8.   7.  14.  12.  10.   7.   4.   6.   5.   7.   6. ]
- [62.  58.  64.  60.  63.  57.  55.  56.  59.  61.  57.  60. ]
- [ 1.   1.3  1.2  0.8  0.8  0.9  1.   1.2  1.1  1.   1.2  1.2]]
-transpose matrix:
- [[ 1.   9.  62.   1. ]
- [ 1.   8.  58.   1.3]
- [ 1.   7.  64.   1.2]
- [ 1.  14.  60.   0.8]
- [ 1.  12.  63.   0.8]
- [ 1.  10.  57.   0.9]
- [ 1.   7.  55.   1. ]
- [ 1.   4.  56.   1.2]
- [ 1.   6.  59.   1.1]
- [ 1.   5.  61.   1. ]
- [ 1.   7.  57.   1.2]
- [ 1.   6.  60.   1.2]]
-xtx matrix:
- [[1.2000e+01 9.5000e+01 7.1200e+02 1.2700e+01]
- [9.5000e+01 8.4500e+02 5.6630e+03 9.6600e+01]
- [7.1200e+02 5.6630e+03 4.2334e+04 7.5240e+02]
- [1.2700e+01 9.6600e+01 7.5240e+02 1.3750e+01]]
-xtxi matrix:
- [[ 5.48122405e+01 -3.05443019e-01 -7.05023338e-01 -9.90182539e+00]
- [-3.05443019e-01  2.43950451e-02 -3.43043164e-03  2.98445219e-01]
- [-7.05023338e-01 -3.43043164e-03  1.23150084e-02  1.40827427e-03]
- [-9.90182539e+00  2.98445219e-01  1.40827427e-03  7.04463918e+00]]
-xty matrix:
- [[  128.   1231. ]
- [  987.   9622. ]
- [ 7580.  72980. ]
- [  137.3  1312. ]]
-result B matrix:
- [[ 1.08969952e+01  9.10971989e+01]
- [-4.49402883e-02 -6.40072324e-02]
- [-8.77035871e-02 -2.94373672e-01]
- [ 5.03545972e+00  2.78353035e+01]]
-Multiple linear regression equation  are :
- y=10.896995241634386+-0.04494028834971431x1+-0.08770358706372366x2+5.035459723009581x3
- y=91.09719894388036+-0.06400723236924932x1+-0.29437367205051923x2+27.83530348356726x3
-y-hat: 
- [100.10526967 109.69736263 105.21159749  94.80692015  94.0518136
-  98.72960045 102.29389984 107.75860856 103.96394273 100.65567227
- 107.27221319 106.45309941]
-error:
- [[-90.10526967 -97.69736263 -94.21159749 -85.80692015 -85.0518136
-  -88.72960045 -91.29389984 -95.75860856 -92.96394273 -90.65567227
-  -96.27221319 -94.45309941]
- [ -0.10526967   0.30263737  -0.21159749  -0.80692015   0.9481864
-    0.27039955   1.70610016   0.24139144   1.03605727  -2.65567227
-   -4.27221319   3.54690059]]
-Required values:
-SSE= 101563.89977216667
-SST= 126292.75
-SSR= 24728.850227833333
-
-1) R2 Test 
-R2= 0.19580577846181457
-inference related to r2 test
-reject the model-bad fit
-2)ANOVA TEST
-enter alpha
-0.05
-ANOVA TABLE
-
-  source of variation  sum of squares  degrees of freedom mean sum of square  \
-0          Regression    24728.850228                   3        8242.950076   
-1              errors   101563.899772                   8       12695.487472   
-2               total   126292.750000                  11                      
-
-  varience ratio  
-0       0.649282  
-1                 
-2                 
-inference related to anova test
-accept ho
-
-T-test
-
-PARAMETER TABLE
-
-  predictor                                   coefficient  standard error  \
-0   beta[0]       [10.896995241634386, 91.09719894388036]      834.187097   
-1   beta[1]  [-0.04494028834971431, -0.06400723236924932]       17.598494   
-2   beta[2]  [-0.08770358706372366, -0.29437367205051923]       12.503801   
-3   beta[3]        [5.035459723009581, 27.83530348356726]      299.057066   
-
-   T-values  
-0  0.013063  
-1 -0.002554  
-2 -0.007014  
-3  0.016838  
-beta0 is not contributing to the model
-beta1 is not contributing to the model
-beta2 is not contributing to the model
-beta3 is not contributing to the model
+Test of Individual Parameters:
+Table value of t is 2.26216
+t(cal) for b[0] is 0.63252
+b[0] is not contributing to the model
+t(cal) for b[1] is 3.30717
+b[1] is contributing to the model
+t(cal) for b[2] is 4.14949
+b[2] is contributing to the model
