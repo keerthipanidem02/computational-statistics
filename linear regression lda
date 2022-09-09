@@ -1,0 +1,111 @@
+def transpose(m):
+  r=len(m)
+  c=len(m[0])
+  trn=[]
+  for j in range(c):
+      b=[]
+      for i in range(r):
+         b.append(m[i][j])
+      trn.append(b)
+  return trn
+  
+  def mul(ma,mb):
+  r=len(ma)
+  c=len(mb[0])
+  q=len(mb)
+  m1=[]
+  mat=create(r,c,m1)
+  for i in range(r):
+      for j in range(c):
+          for k in range(q):
+              mat[i][j]=mat[i][j]+ma[i][k]*mb[k][j]
+  return mat
+  
+  #minor
+def minor(m,i,j):
+    return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]
+    
+ 
+ #determinent
+def determinent(a1):
+  
+
+  if len(a1)==2:
+    return a1[0][0]*a1[1][1]-a1[0][1]*a1[1][0]
+
+  sum=0
+  for i in range(len(a1)):
+    sum+=((-1)**i)*a1[0][i]*determinent(minor(a1,0,i))
+
+  return sum
+  
+
+#inverse 
+def inverse(a1):
+
+  if len(a1)==2:
+    return [[a1[1][1]/determinent(a1),(-1)*a1[1][0]/determinent(a1)],
+                                  [(-1)*a1[0][1]/determinent(a1),a1[0][0]/determinent(a1)]]
+
+  cofactors=[]
+  for i in range(len(a1)):
+    cofact=[]
+    for j in range(len(a1)):
+      cofact.append((-1)**(i+j)*determinent(minor(a1,i,j)))
+    cofactors.append(cofact)
+
+  k=transpose(cofactors)
+
+  for i in range(len(a1)):
+    for j in range(len(a1)):
+      k[i][j]=k[i][j]/determinent(a1)
+  
+
+  return k
+  
+  
+  import numpy as np
+import pandas as pd
+import scipy.stats
+
+y=[]
+cy=int(input("enter no of dependent col's"))
+cx=int(input("enter no of independent col's"))
+ny=int(input("enter no of values in dependent variable"))
+nx=int(input("enter no of values in independent variables"))
+print("enter y and x values\n")
+for i in range(cy):
+  y.append(list(map(float,input().split())))
+y=np.array(y)
+x=[]
+for i in range(cx):
+    x.append(list(map(float,input().split())))
+l1=[]
+for i in range(nx):
+  l1.append(1)
+x.insert(0,l1)
+x1=np.array(x)
+y1=np.array(y)
+xt=transpose(x1)
+xt1=np.array(xt)
+xtx=mul(x1,xt)
+xtxi=inverse(xtx)
+xtx1=np.array(xtx)
+xtxi1=np.array(xtxi)
+yt=transpose(y)
+xty=mul(x1,yt)
+xty1=np.array(xty)
+B=mul(xtxi,xty)
+B1=np.array(B)
+p=len(B)
+if(p==3):
+    print("Multiple linear regression equation is : y={}+{}x1+{}x2".format(B1[0],B1[1],B1[2]))
+print("enter values")
+t=list(map(float,input().split()))
+#t=[1000.0,2.9]
+t1=(B1[0][0])+(B1[1][0])*t[0]+(B1[2][0])*t[1]
+print(t1)
+#1 1 1 1  1 0 0 0 0 0
+#1300  1260 1220 1180 1060 1140   1100 1020 980 940
+#2.7 3.7 2.9 2.5 3.9 2.1 3.5 3.3 2.3 3.1
+
